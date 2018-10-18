@@ -61,7 +61,7 @@ tower-h2-balance      = { git = "https://github.com/tower-rs/tower-h2" }
 tower-grpc            = { git = "https://github.com/tower-rs/tower-grpc" }
 
 # dns
-trust-dns-resolver = { default-features = false, git = "https://github.com/bluejekyll/trust-dns" }
+trust-dns-resolver = { default-features = false, git = "https://github.com/nwolber/trust-dns", branch = "fix-max-ttl" }
 
 # tls
 ring = "0.13"
