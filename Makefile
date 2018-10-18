@@ -1,7 +1,24 @@
-TARGET = target/debug
+ifndef LINKERD_ARCH
+	LINKERD_ARCH = amd64
+endif
+ifeq ($(LINKERD_ARCH),arm)
+	CARGO_TARGET = armv7-unknown-linux-gnueabihf
+endif
+ifeq ($(LINKERD_ARCH),aarch64)
+	CARGO_TARGET = aarch64-unknown-linux-gnu
+endif
+
+TARGET = target
+
+ifdef CARGO_TARGET
+	TARGET := $(TARGET)/$(CARGO_TARGET)
+endif
+
 ifdef CARGO_RELEASE
 	RELEASE = --release
-	TARGET = target/release
+	TARGET := $(TARGET)/release
+else
+	TARGET := $(TARGET)/debug
 endif
 
 ifndef PACKAGE_VERSION
@@ -17,17 +34,25 @@ PKG = $(PKG_NAME).tar.gz
 SHASUM = shasum -a 256
 
 CARGO = cargo
-ifdef CARGO_VERBOSE
-	CARGO = cargo --verbose
-endif
 
 CARGO_BUILD = $(CARGO) build --frozen $(RELEASE)
+ifdef CARGO_TARGET
+	CARGO_BUILD := $(CARGO_BUILD) --target=$(CARGO_TARGET)
+endif
 
 TEST_FLAGS =
 ifndef TEST_FLAKEY
 	TEST_FLAGS = --no-default-features
 endif
 CARGO_TEST = $(CARGO) test --frozen $(RELEASE) $(TEST_FLAGS)
+
+CARGO_FETCH = $(CARGO) fetch --locked
+
+ifdef CARGO_VERBOSE
+	CARGO_BUILD := $(CARGO_BUILD) --verbose
+	CARGO_TEST := $(CARGO_TEST) --verbose
+	CARGO_FETCH := $(CARGO_FETCH) --verbose
+endif
 
 DOCKER = docker
 DOCKER_BUILD = docker build
@@ -50,7 +75,7 @@ $(PKG_ROOT)/$(PKG): $(TARGET_BIN)
 
 .PHONY: fetch
 fetch: Cargo.lock
-	$(CARGO) fetch --locked
+	$(CARGO_FETCH)
 
 .PHONY: build
 build: $(TARGET_BIN)

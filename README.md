@@ -51,6 +51,16 @@ Usually, [Cargo][cargo], Rust's package manager, is used to build and test this
 project. If you don't have Cargo installed, we suggest getting it via
 https://rustup.rs/.
 
+### Cross-compilation for arm32 and arm64/aarch64
+To build linkerd2-proxy for arm32 and aarch64 processor architecures a Vagrant-managed virtual machine is used.
+You can get Vagrant from the official site https://www.vagrantup.com/.
+
+For your convenience you can use the `cross-build.sh` script. For example to compile a release version for aarch64 you
+can use:
+```
+LINKERD_ARCH=aarch64 CARGO_RELEASE=1 ./cross-build.sh package
+```
+
 ## Artifacts
 
 Each version of the _master_ branch is published to
